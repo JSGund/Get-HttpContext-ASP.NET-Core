@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Get_HttpContext_ASP.NET_Core.Controllers
 {
@@ -19,16 +18,29 @@ namespace Get_HttpContext_ASP.NET_Core.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUserService _userService;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IHttpContextAccessor httpContextAccessor)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, 
+            IHttpContextAccessor httpContextAccessor,
+            IUserService userService)
         {
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
+            _userService = userService;
+        }
+
+        [HttpGet("/getDetails")]
+        public string GetDetails()
+        {
+            var result = "Method - " + HttpContext.Request.Method + " Path - " + HttpContext.Request.Path;
+            return result;
         }
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            var res = HttpContext.Request.Method;
+            var userName = _userService.GetLoginUserName();
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
